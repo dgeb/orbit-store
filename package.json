@@ -48,7 +48,7 @@
     "yuidocjs": "^0.8.1"
   },
   "dependencies": {
-    "orbit-core": "^0.8.0-beta.2",
+    "orbit-core": "^0.8.0-beta.3",
     "rxjs-es": "^5.0.0-beta.11"
   }
 }
