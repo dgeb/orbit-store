@@ -225,9 +225,8 @@ module('OC - Store', function(hooks) {
       store.sync(addRecordBTransform),
       store.sync(addRecordCTransform)
     ])
+      .then(() => store.transformLog.truncate(addRecordBTransform.id))
       .then(() => {
-        store.transformLog.truncate(addRecordBTransform.id);
-
         assert.deepEqual(
           store.allTransforms(),
           [
@@ -253,9 +252,8 @@ module('OC - Store', function(hooks) {
       store.sync(addRecordBTransform),
       store.sync(addRecordCTransform)
     ])
+      .then(() => store.transformLog.clear())
       .then(() => {
-        store.transformLog.clear();
-
         assert.deepEqual(
           store.allTransforms(),
           [],
@@ -305,6 +303,8 @@ module('OC - Store', function(hooks) {
     const addRecordBTransform = Transform.from(addRecord(recordB));
     const addRecordCTransform = Transform.from(addRecord(recordC));
 
+    const rollbackOperations = [];
+
     return all([
       store.sync(addRecordATransform),
       store.sync(addRecordBTransform),
@@ -315,11 +315,10 @@ module('OC - Store', function(hooks) {
       ]))
     ])
       .then(() => {
-        const rollbackOperations = [];
         store.cache.on('patch', (operation) => rollbackOperations.push(operation));
-
-        store.rollback(addRecordATransform.id);
-
+        return store.rollback(addRecordATransform.id);
+      })
+      .then(() => {
         assert.deepEqual(
           rollbackOperations,
           [
