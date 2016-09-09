@@ -13,14 +13,16 @@ import Source from 'orbit/source';
 import Cache from './cache';
 
 export default class Store extends Source {
-  constructor({ schema, keyMap, cacheOptions, name } = {}) {
-    super(...arguments);
+  constructor(options = {}) {
+    const { schema, keyMap, cacheOptions } = options;
 
     assert('Store\'s `keyMap` must be specified in `options.keyMap` constructor argument', keyMap);
 
-    this.keyMap = keyMap;
-    this.name = name || 'store';
+    options.name = options.name || 'store';
 
+    super(options);
+
+    this.keyMap = keyMap;
     this._transforms = {};
     this._transformInverses = {};
 
