@@ -93,7 +93,7 @@ export default {
     if (!data) { return null; }
 
     const [relatedType, relatedRecordId] = data.split(':');
-    return { [relatedRecordId]: cache.get([relatedType, relatedRecordId]) };
+    return cache.get([relatedType, relatedRecordId]);
   },
 
   attribute(context, name) {

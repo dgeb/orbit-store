@@ -664,8 +664,6 @@ test('#query - relatedRecord', function(assert) {
 
   assert.deepEqual(
     cache.query(oqe('relatedRecord', { type: 'moon', id: 'callisto' }, 'planet')),
-    {
-      jupiter
-    }
+    jupiter
   );
 });
