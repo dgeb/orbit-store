@@ -1,6 +1,6 @@
 {
   "name": "orbit-store",
-  "version": "0.8.0-beta.2",
+  "version": "0.8.0-beta.3",
   "description": "Orbit.js source for managing in-memory records.",
   "homepage": "https://github.com/orbitjs/orbit-store",
   "contributors": [
