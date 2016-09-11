@@ -12,13 +12,6 @@ import 'rxjs/add/observable/empty';
 import '../../rxjs/add/operator/matching';
 import RecordObservable from './record-observable';
 
-function extractRecordFromHasOneResult(value) {
-  if (!value) { return null; }
-
-  const id = Object.keys(value)[0];
-  return value[id];
-}
-
 export default class HasOneObservable extends Observable {
   constructor(subscribe, cache, record, relationship) {
     super(subscribe);
@@ -53,7 +46,7 @@ export default class HasOneObservable extends Observable {
 
   _fetchCurrentRelatedRecord() {
     const result = this.cache.query(qb.relatedRecord(this.record, this.relationship));
-    return extractRecordFromHasOneResult(result);
+    return result;
   }
 
   relatedRecord({ initial = false } = {}) {
