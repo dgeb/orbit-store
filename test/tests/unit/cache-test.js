@@ -2,8 +2,7 @@ import Schema from 'orbit/schema';
 import KeyMap from 'orbit/key-map';
 import { queryExpression as oqe } from 'orbit/query/expression';
 import {
-  RecordNotFoundException,
-  ModelNotRegisteredException
+  RecordNotFoundException
 } from 'orbit/lib/exceptions';
 import {
   addRecord,
@@ -585,15 +584,6 @@ test('#query - record - throws RecordNotFoundException if record doesn\'t exist'
   );
 });
 
-test('#query - record - throws ModelNotRegisteredException if record type doesn\'t exist', function(assert) {
-  let cache = new Cache({ schema, keyMap });
-
-  assert.throws(
-    () => cache.query(oqe('record', { type: 'black-hole', id: 'jupiter' })),
-    new ModelNotRegisteredException('black-hole')
-  );
-});
-
 test('#query - records - finds matching records', function(assert) {
   let cache = new Cache({ schema, keyMap });
 
@@ -612,15 +602,6 @@ test('#query - records - finds matching records', function(assert) {
   assert.deepEqual(
     cache.query(oqe('records', 'planet')),
     { jupiter }
-  );
-});
-
-test('#query - records - throws ModelNotRegisteredException when model isn\'t registered in schema', function(assert) {
-  let cache = new Cache({ schema, keyMap });
-
-  assert.throws(
-    () => cache.query(oqe('records', 'black-hole')),
-    new ModelNotRegisteredException('black-hole')
   );
 });
 
