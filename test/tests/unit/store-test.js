@@ -123,7 +123,7 @@ module('OC - Store', function(hooks) {
 
     return store.query(qb.record({ type: 'planet', id: 'jupiter' }))
       .catch(e => {
-        assert.equal(e.message, 'Record not found - planet:jupiter');
+        assert.equal(e.message, 'Record not found: planet:jupiter');
       });
   });
 

@@ -47,10 +47,6 @@ export default {
 
   record(context, { type, id }) {
     const cache = this.target;
-    const schema = cache.schema;
-
-    schema.ensureModelTypeInitialized(type);
-
     const record = cache.get([type, id]);
 
     if (!record) {
@@ -62,10 +58,6 @@ export default {
 
   records(context, type) {
     const cache = this.target;
-    const schema = cache.schema;
-
-    schema.ensureModelTypeInitialized(type);
-
     const records = cache.get([type]);
 
     context.basePath = [type];
