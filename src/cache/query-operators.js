@@ -45,6 +45,39 @@ export default {
     return matches;
   },
 
+  sort(context, select, sortExpressions) {
+    const values = this.evaluate(select, context);
+    const keys = Object.keys(values);
+    const basePath = context.basePath;
+
+    const comparisonValues = keys.reduce((obj, key) => {
+      obj[key] = sortExpressions.map(sortExpression => this.evaluate(
+        sortExpression.field,
+        merge(context, { basePath: basePath.concat(key) })
+      ));
+      return obj;
+    }, {});
+
+    const comparisonOrders = sortExpressions.map(
+      sortExpression => sortExpression.order === 'descending' ? -1 : 1);
+
+    keys.sort((key1, key2) => {
+      const values1 = comparisonValues[key1];
+      const values2 = comparisonValues[key2];
+      for (let i = 0; i < sortExpressions.length; i++) {
+        if (values1[i] < values2[i]) {
+          return -comparisonOrders[i];
+        }
+        if (values1[i] > values2[i]) {
+          return comparisonOrders[i];
+        }
+      }
+      return 0;
+    });
+
+    return keys.map(key => values[key]);
+  },
+
   record(context, { type, id }) {
     const cache = this.target;
     const record = cache.get([type, id]);

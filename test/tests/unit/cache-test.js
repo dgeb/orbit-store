@@ -543,6 +543,88 @@ test('#query can perform a complex conditional `or` filter', function(assert) {
   );
 });
 
+
+test('#query can sort by an attribute', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('sort',
+        oqe('records', 'planet'),
+        [{ field: oqe('attribute', 'name'), order: 'ascending' }]
+      )
+    ),
+    [
+      earth,
+      jupiter,
+      mercury,
+      venus
+    ]
+  );
+});
+
+test('#query can sort by an attribute in descending order', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('sort',
+        oqe('records', 'planet'),
+        [{ field: oqe('attribute', 'name'), order: 'descending' }]
+      )
+    ),
+    [
+      venus,
+      mercury,
+      jupiter,
+      earth
+    ]
+  );
+});
+
+test('#query can sort by according to multiple criteria', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('sort',
+        oqe('records', 'planet'),
+        [
+          { field: oqe('attribute', 'classification'), order: 'ascending' },
+          { field: oqe('attribute', 'name'), order: 'ascending' }
+        ]
+      )
+    ),
+    [
+      jupiter,
+      earth,
+      mercury,
+      venus
+    ]
+  );
+});
+
 test('#query - record', function(assert) {
   let cache = new Cache({ schema, keyMap });
 
