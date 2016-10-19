@@ -2,6 +2,7 @@ import Schema from 'orbit/schema';
 import KeyMap from 'orbit/key-map';
 import { queryExpression as oqe } from 'orbit/query/expression';
 import {
+  QueryExpressionParseError,
   RecordNotFoundException
 } from 'orbit/lib/exceptions';
 import {
@@ -622,6 +623,108 @@ test('#query can sort by according to multiple criteria', function(assert) {
       mercury,
       venus
     ]
+  );
+});
+
+test('#query can paginate using offset', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('page',
+        oqe('sort',
+          oqe('records', 'planet'),
+          [{ field: oqe('attribute', 'name'), order: 'ascending' }]),
+        { offset: 1 }
+      )
+    ),
+    [
+      jupiter,
+      mercury,
+      venus
+    ]
+  );
+});
+
+test('#query can paginate using limit', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('page',
+        oqe('sort',
+          oqe('records', 'planet'),
+          [{ field: oqe('attribute', 'name'), order: 'ascending' }]),
+        { limit: 2 }
+      )
+    ),
+    [
+      earth,
+      jupiter
+    ]
+  );
+});
+
+test('#query can paginate using offset and limit', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.deepEqual(
+    cache.query(
+      oqe('page',
+        oqe('sort',
+          oqe('records', 'planet'),
+          [{ field: oqe('attribute', 'name'), order: 'ascending' }]),
+        { offset: 1, limit: 2 }
+      )
+    ),
+    [
+      jupiter,
+      mercury
+    ]
+  );
+});
+
+test('#query cannot paginate without sorting', function(assert) {
+  let cache = new Cache({ schema, keyMap });
+
+  let jupiter = { type: 'planet', id: 'jupiter', attributes: { name: 'Jupiter', classification: 'gas giant', atmosphere: true } };
+  let earth = { type: 'planet', id: 'earth', attributes: { name: 'Earth', classification: 'terrestrial', atmosphere: true } };
+  let venus = { type: 'planet', id: 'venus', attributes: { name: 'Venus', classification: 'terrestrial', atmosphere: true } };
+  let mercury = { type: 'planet', id: 'mercury', attributes: { name: 'Mercury', classification: 'terrestrial', atmosphere: false } };
+
+  cache.reset({ planet: { jupiter, earth, venus, mercury } });
+
+  assert.throws(
+    () => {
+      cache.query(
+        oqe('page',
+          oqe('records', 'planet'),
+          { offset: 1, limit: 10 }
+        )
+      );
+    },
+    new QueryExpressionParseError('Query results cannot be paginated without specifying a sort order.')
   );
 });
 

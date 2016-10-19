@@ -1,6 +1,6 @@
-import { merge } from 'orbit/lib/objects';
+import { isArray, merge } from 'orbit/lib/objects';
 import { every, some } from 'orbit/lib/arrays';
-import { RecordNotFoundException } from 'orbit/lib/exceptions';
+import { QueryExpressionParseError, RecordNotFoundException } from 'orbit/lib/exceptions';
 
 const EMPTY = () => {};
 
@@ -76,6 +76,18 @@ export default {
     });
 
     return keys.map(key => values[key]);
+  },
+
+  page(context, select, options) {
+    const records = this.evaluate(select, context);
+
+    if (!isArray(records)) {
+      throw new QueryExpressionParseError('Query results cannot be paginated without specifying a sort order.');
+    }
+
+    const begin = options.offset || 0;
+    const end = options.limit !== undefined ? begin + options.limit : undefined;
+    return records.slice(begin, end);
   },
 
   record(context, { type, id }) {
